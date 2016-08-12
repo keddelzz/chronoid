@@ -12,4 +12,9 @@ package object chronoid {
     sys.exit(1)
   }
 
+  def enum(xs: Seq[String]) =
+    Option(xs) collect {
+      case in :+ ls => s"${in.mkString(", ")} and $ls"
+    }
+
 }

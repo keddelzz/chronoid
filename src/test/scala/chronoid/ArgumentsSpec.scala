@@ -38,9 +38,9 @@ class ArgumentsSpec extends FlatSpec with Matchers {
     }
 
     parseArgs(List("-e", "avi"), Settings()) should be
-      (Left(s"Argument 'avi' of '-e' is not a supported output format!"))
+      (Left(Extension.errorMsg("-e", "avi")))
     parseArgs(List("--extension", "avi"), Settings()) should be
-      (Left(s"Argument 'avi' of '--extension' is not a supported output format!"))
+      (Left(Extension.errorMsg("--extension", "avi")))
   }
 
   "Parsing the interval argument" should "work" in {
@@ -54,9 +54,9 @@ class ArgumentsSpec extends FlatSpec with Matchers {
     }
 
     parseArgs(List("-i", "foo"), Settings()) should be
-      (Left(s"Argument 'foo' of '-i' is not a valid interval!"))
+      (Left(Interval.errorMsg("-i", "foo")))
     parseArgs(List("--interval", "foo"), Settings()) should be
-      (Left(s"Argument 'foo' of '--interval' is not a valid interval!"))
+      (Left(Interval.errorMsg("--interval", "foo")))
   }
 
   "Parsing filename argument" should "work" in {
@@ -85,14 +85,14 @@ class ArgumentsSpec extends FlatSpec with Matchers {
     val buidSbtPath = new File(buildFile).getAbsolutePath
 
     parseArgs(List("-t", "bar"), Settings()) should be
-      (Left(s"Target directory 'bar' ('$barPath') does not exist!"))
+      (Left(Target.doesNotExist("bar", barPath)))
     parseArgs(List("--target", "bar"), Settings()) should be
-      (Left(s"Target directory 'bar' ('$barPath') does not exist!"))
+      (Left(Target.doesNotExist("bar", barPath)))
 
     parseArgs(List("-t", buildFile), Settings()) should be
-      (Left(s"Target directory '$buildFile' ('$buidSbtPath') is not a directory!"))
+      (Left(Target.isNoDirectory(buildFile, buidSbtPath)))
     parseArgs(List("--target", buildFile), Settings()) should be
-      (Left(s"Target directory '$buildFile' ('$buidSbtPath') is not a directory!"))
+      (Left(Target.isNoDirectory(buildFile, buidSbtPath)))
   }
 
   "Parsing the help argument" should "work" in {

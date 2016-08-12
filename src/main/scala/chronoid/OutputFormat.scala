@@ -13,7 +13,7 @@ object OutputFormat {
   case object Png  extends OutputFormat("png")
   case object Wbmp extends OutputFormat("wbmp")
 
-  private val lookup: Map[String, OutputFormat] =
+  val lookup: Map[String, OutputFormat] =
     Seq(
       Bmp,
       Gif,

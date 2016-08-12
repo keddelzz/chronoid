@@ -1,6 +1,7 @@
 package chronoid
 
 import java.io.File
+import chronoid.OutputFormat.lookup
 
 case class Settings(
   extension: Option[OutputFormat] = None,
@@ -13,10 +14,15 @@ object Extension {
     Option(args) collect {
       case (x @ ("--extension" | "-e")) :: hd :: tl =>
         OutputFormat(hd) match {
-          case None    => Left(s"Argument '$hd' of '$x' is not a supported output format!")
+          case None    => Left(errorMsg(hd, x))
           case Some(x) => Right(x -> tl)
         }
     }
+
+  def errorMsg(key: String, arg: String): String = {
+    val supportEnum = enum(lookup.keys.toSeq.sorted).getOrElse("")
+    s"Argument '$arg' of '$key' is not a supported output format! (Supported formats are: $supportEnum.)"
+  }
 }
 
 object Interval {
@@ -26,12 +32,15 @@ object Interval {
     Option(args) collect {
       case (x @ ("--interval" | "-i")) :: hd :: tl =>
         Option(hd) collect {
-          case Iv(x) => x
+          case Iv(x)   => x
         } match {
-          case None    => Left(s"Argument '$hd' of '$x' is not a valid interval!")
+          case None    => Left(errorMsg(x, hd))
           case Some(x) => Right(x.toInt -> tl)
         }
     }
+
+  def errorMsg(key: String, arg: String): String =
+    s"Argument '$arg' of '$key' is not a valid interval! Only positive intervals are allowed!"
 }
 
 object Filename {
@@ -49,11 +58,17 @@ object Target {
         val absolutePath = outDirectory.getAbsolutePath
 
         if (!outDirectory.exists()) {
-          Left(s"Target directory '$hd' ('$absolutePath') does not exist!")
+          Left(doesNotExist(hd, absolutePath))
         } else if (!outDirectory.isDirectory()) {
-          Left(s"Target directory '$hd' ('$absolutePath') is not a directory!")
+          Left(isNoDirectory(hd, absolutePath))
         } else {
           Right(outDirectory -> tl)
         }
     }
+  
+  def doesNotExist(arg: String, absolutePath: String): String =
+    s"Target directory '$arg' ('$absolutePath') does not exist!"
+  
+  def isNoDirectory(arg: String, absolutePath: String): String =
+    s"Target directory '$arg' ('$absolutePath') is not a directory!"
 }
