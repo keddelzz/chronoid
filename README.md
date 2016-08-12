@@ -36,3 +36,7 @@ where
 
  Options can be given in any order.
 ```
+
+## License
+
+See the [LICENSE](LICENSE.md) file for license rights and limitations (MIT).
