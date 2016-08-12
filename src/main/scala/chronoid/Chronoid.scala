@@ -55,16 +55,14 @@ object Chronoid {
         println(s"Created file '${file.getAbsolutePath}'!")
         Thread.sleep(inv)
         go(cnt + 1)
-      } else ()
+      } else {
+        val nameTemplate = "\"" + s"$name-${"%d"}.${ext.fileExtentsion}" + "\""
+        println("Screenshots can be combined to a timelapse with e.g.")
+        println(s"ffmpeg -start_number 0 -r 10 -i $nameTemplate -q:v 1 -b:v 1500k $name.mp4")
+        println()
+      }
 
-    SigHandler.onCtrlC {
-      running = false
-      Thread.sleep(1000)
-      val nameTemplate = "\"" + s"$name-${"%d"}.${ext.fileExtentsion}" + "\""
-      println("Screenshots can be combined to a timelapse with e.g.")
-      println(s"ffmpeg -start_number 0 -r 10 -i $nameTemplate -q:v 1 -b:v 1500k $name.mp4")
-      println()
-    }
+    SigHandler.onCtrlC { running = false }
 
     logo.foreach(println)
     println()
