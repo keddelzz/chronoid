@@ -10,19 +10,32 @@ object Chronoid {
   def main(args: Array[String]): Unit = {
     val settings  = parseArgs(args.toList, Settings())
     val validated = settings.right.flatMap(validateArgs)
-    validated.fold(error(_, "", syntax), execute)
+    validated.fold(error(_, "", help(false)), execute)
   }
+
+  val logo =
+    Seq(
+      """   ________                           _     __""",
+      """  / ____/ /_  _________  ____  ____  (_)___/ /""",
+      """ / /   / __ \/ ___/ __ \/ __ \/ __ \/ / __  /""",
+      """/ /___/ / / / /  / /_/ / / / / /_/ / / /_/ /""",
+      """\____/_/ /_/_/   \____/_/ /_/\____/_/\__,_/""")
 
   val syntax =
     Seq(
       "syntax: chronoid <filename>.<extension> <interval> <target>",
       "where",
-      "\t-e | --extension\t\tFile extention for output file",
-      "\t-i | --interval\t\t\tInterval between two screenshots",
-      "\t-f | --filename\t\t\tSuffix of the name, which is used for screenshots",
+      "\t-e | --extension\t\tFile extention (and output format) of output file.",
+      "\t-i | --interval\t\t\tInterval between two screenshots in milliseconds.",
+      "\t-f | --filename\t\t\tSuffix of the name, which is used for screenshots.",
       "\t-t | --target\t\t\tTarget directory",
       "",
-      "\tOptions can be given in any order.").mkString("\n")
+      "\tOptions can be given in any order.")
+
+  def help(withLogo: Boolean) = {
+    val prefix = if (withLogo) logo :+ "" else Seq.empty[String]
+    (prefix ++ syntax).mkString("\n")
+  }
 
   private def execute(settings: Settings): Unit = {
     val Settings(Some(ext), Some(inv), Some(name), Some(dst)) = settings
@@ -51,6 +64,8 @@ object Chronoid {
       }
     })
 
+    logo.foreach(println)
+    println()
     go(0)
   }
 
@@ -85,7 +100,7 @@ object Chronoid {
       case Target(tx)             => tx.right flatMap {
         case (out, rest)          => parseArgs(rest, settings.copy(target = Some(out)))
       }
-      case ("-h" | "--help") :: _ => Left(syntax)
+      case ("-h" | "--help") :: _ => Left(logo.mkString("\n"))
       case hd :: _                => Left(s"Illegal argument '$hd'!")
       case _                      => Right(settings)
     }

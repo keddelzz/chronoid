@@ -1,8 +1,7 @@
 package chronoid
 
 import org.scalatest._
-import chronoid.Chronoid.parseArgs
-import chronoid.Chronoid.syntax
+import chronoid.Chronoid._
 import chronoid.OutputFormat._
 import java.io.File
 
@@ -111,7 +110,7 @@ class ArgumentsSpec extends FlatSpec with Matchers {
       parseArgs(List("-i", "50", "--help"), Settings()))
 
     for (arg <- args) {
-      arg should be (Left(syntax))
+      arg should be (Left(logo.mkString("\n")))
     }
   }
 
