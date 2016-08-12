@@ -39,30 +39,32 @@ object Chronoid {
 
   private def execute(settings: Settings): Unit = {
     val Settings(Some(ext), Some(inv), Some(name), Some(dst)) = settings
+    @volatile var running = true
 
     def filename(n: Int): String =
       s"$name-$n.${ext.fileExtentsion}"
 
     @tailrec
-    def go(cnt: Int): Unit = {
-      val fname = filename(cnt)
-      val screenSize = Toolkit.getDefaultToolkit().getScreenSize()
-      val image = new Robot().createScreenCapture(new Rectangle(screenSize))
-      val file = new File(dst, fname)
-      ImageIO.write(image, ext.fileExtentsion, file)
-      println(s"Created file '${file.getAbsolutePath}'!")
-      Thread.sleep(inv)
-      go(cnt + 1)
-    }
+    def go(cnt: Int): Unit =
+      if (running) {
+        val fname = filename(cnt)
+        val screenSize = Toolkit.getDefaultToolkit().getScreenSize()
+        val image = new Robot().createScreenCapture(new Rectangle(screenSize))
+        val file = new File(dst, fname)
+        ImageIO.write(image, ext.fileExtentsion, file)
+        println(s"Created file '${file.getAbsolutePath}'!")
+        Thread.sleep(inv)
+        go(cnt + 1)
+      } else ()
 
-    Runtime.getRuntime().addShutdownHook(new Thread() {
-      override def run() = {
-        val nameTemplate = "\"" + s"$name-${"%d"}.${ext.fileExtentsion}" + "\""
-        println("Screenshots can be combined to a timelapse with e.g.")
-        println(s"ffmpeg -start_number 0 -r 10 -i $nameTemplate -q:v 1 -b:v 1500k $name.mp4")
-        println()
-      }
-    })
+    SigHandler.onCtrlC {
+      running = false
+      Thread.sleep(1000)
+      val nameTemplate = "\"" + s"$name-${"%d"}.${ext.fileExtentsion}" + "\""
+      println("Screenshots can be combined to a timelapse with e.g.")
+      println(s"ffmpeg -start_number 0 -r 10 -i $nameTemplate -q:v 1 -b:v 1500k $name.mp4")
+      println()
+    }
 
     logo.foreach(println)
     println()
