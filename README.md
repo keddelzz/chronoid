@@ -1,10 +1,10 @@
 # Chronoid
 
-Chronoid is a small tool, which was created for capturing a series of screenshots 
-for timelapses.  
+Chronoid is a small tool, for capturing a series of screenshots for timelapses.  
 As of now the programm is a command line application.
 
-Its first implementation was used during [Ludum Dare](http://ludumdare.com/compo/) 32. 
+This is a reimplementation of Chronoid in [Scala](http://www.scala-lang.org/). 
+Its first version was used during [Ludum Dare](http://ludumdare.com/compo/) 32.
 Timelapses, which were created using the first implementation and [ffmpeg](https://ffmpeg.org/), 
 can be found [here](https://www.youtube.com/playlist?list=PL0AsE1_PyxNFTE7ABEH2vosiW4yMXz3IO).
 
