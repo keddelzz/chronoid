@@ -2,8 +2,7 @@
 // ==================== SETTINGS ====================
 
 lazy val baseSettings = Seq(
-  EclipseKeys.withSource := true,
-  scalaVersion := "2.11.8",
+  scalaVersion := "2.12.7",
   libraryDependencies ++= Seq(
     "org.scalatest" %% "scalatest" % "3.0.0" % "test"
   )
