@@ -90,7 +90,7 @@ object Screen {
         val optInfo = Option(desc) flatMap {
           case "all"     => Option(ScreenInfo.All)
           case "default" => Option(ScreenInfo.Default)
-          case s if s startsWith "screen:" =>
+          case s =>
             val optionIndex = ScreenInfo.screenDeviceIndexById(s)
             optionIndex.map(ScreenInfo.Single)
           case _ =>

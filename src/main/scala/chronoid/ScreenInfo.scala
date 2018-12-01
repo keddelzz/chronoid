@@ -15,17 +15,13 @@ object ScreenInfo {
     for (dev <- env.getScreenDevices) {
       val dmode = dev.getDisplayMode; import dmode._
       val refreshRate = if (getRefreshRate != 0) s" ${getRefreshRate}Hz" else ""
-      val deviceId = s"screen${dev.getIDstring}"
-      println(s"$deviceId (${getWidth}x$getHeight$refreshRate)")
+      println(s"${dev.getIDstring} (${getWidth}x$getHeight$refreshRate)")
     }
   }
 
   def screenDeviceIndexById(id: String): Option[Int] = {
     val env = GraphicsEnvironment.getLocalGraphicsEnvironment
-    val index = env.getScreenDevices.indexWhere { dev =>
-      val deviceId = s"screen${dev.getIDstring}"
-      deviceId == id
-    }
+    val index = env.getScreenDevices.indexWhere (_.getIDstring == id)
 
     if (index >= 0) Option(index)
     else Option.empty[Int]
