@@ -4,10 +4,11 @@ import java.io.File
 import chronoid.OutputFormat.lookup
 
 case class Settings(
-  extension: Option[OutputFormat] = None,
-  interval:  Option[Int]          = None,
-  filename:  Option[String]       = None,
-  target:    Option[File]         = None)
+  extension:  Option[OutputFormat] = None,
+  interval:   Option[Int]          = None,
+  filename:   Option[String]       = None,
+  target:     Option[File]         = None,
+  screenInfo: Option[ScreenInfo]   = None)
 
 object Extension {
   def unapply(args: Args): Option[ErrX[OutputFormat]] =
@@ -71,4 +72,34 @@ object Target {
   
   def isNoDirectory(arg: String, absolutePath: String): String =
     s"Target directory '$arg' ('$absolutePath') is not a directory!"
+}
+
+object PrintScreens {
+  def unapply(args: Args): Option[ErrX[Unit]] =
+    Option(args) collect {
+      case (_ @ "--screeninfo" | "-si") :: tl =>
+        Right(() -> tl)
+    }
+}
+
+object Screen {
+  def unapply(args: Args): Option[ErrX[ScreenInfo]] =
+    Option(args) collect {
+      case (_ @ "--screen" | "-s") :: desc :: tl =>
+
+        val optInfo = Option(desc) flatMap {
+          case "all"     => Option(ScreenInfo.All)
+          case "default" => Option(ScreenInfo.Default)
+          case s if s startsWith "screen:" =>
+            val optionIndex = ScreenInfo.screenDeviceIndexById(s)
+            optionIndex.map(ScreenInfo.Single)
+          case _ =>
+            Option.empty[ScreenInfo]
+        }
+
+        optInfo match {
+          case Some(info) => Right(info -> tl)
+          case _          => Left(s"Invalid screen descriptor '$desc'!")
+        }
+    }
 }
